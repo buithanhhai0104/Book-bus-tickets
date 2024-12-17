@@ -1,13 +1,12 @@
 const Trip = require("../models/tripsModel");
 const Ticket = require("../models/ticketsModel");
+const { v4: uuidv4 } = require("uuid");
 const ticketsController = {
   bookTicket: (req, res) => {
-    const { ticket_id, user_id, trip_id, seat_numbers, email, name, phone } =
-      req.body;
+    const { user_id, trip_id, seat_numbers, email, name, phone } = req.body;
 
     // Kiểm tra các trường bắt buộc
     if (
-      !ticket_id ||
       !user_id ||
       !trip_id ||
       !Array.isArray(seat_numbers) ||
@@ -28,7 +27,6 @@ const ticketsController = {
         return res.status(404).json({ message: "Trip not found" });
       }
 
-      // Kiểm tra trạng thái của ghế
       const trip = results[0];
       let seats;
       try {
@@ -37,6 +35,8 @@ const ticketsController = {
       } catch (e) {
         return res.status(500).json({ error: "Failed to parse seats data." });
       }
+
+      // Kiểm tra trạng thái của ghế
       const unavailableSeats = seat_numbers.filter((seat) => {
         return !seats.some(
           (s) => s.seat_number === seat && s.status === "available"
@@ -45,9 +45,7 @@ const ticketsController = {
 
       if (unavailableSeats.length > 0) {
         return res.status(400).json({
-          message: `The following seats are already taken: ${unavailableSeats.join(
-            ", "
-          )}`,
+          nessage: "Ghế đã được đặt",
         });
       }
 
@@ -64,8 +62,9 @@ const ticketsController = {
         if (err)
           return res.status(500).json({ error: "Failed to update seats." });
 
+        // Tạo dữ liệu vé, mỗi ghế có một ticket_id riêng
         const ticketData = seat_numbers.map((seat_number) => ({
-          ticket_id,
+          ticket_id: uuidv4(), // Tạo ticket_id riêng cho mỗi vé
           user_id,
           trip_id,
           seat_number,
@@ -78,9 +77,12 @@ const ticketsController = {
         // Lưu thông tin vé vào bảng tickets
         Ticket.createMultipleTickets(ticketData, (err, ticketResults) => {
           if (err) return res.status(500).json({ error: err.message });
+
+          // Trả về danh sách vé đã đặt
           res.status(201).json({
-            message: `${ticketResults.length} tickets booked successfully.`,
-            ticketIds: ticketResults.map((ticket) => ticket.insertId),
+            message: "Đặt vé thành công",
+            tickets: ticketData,
+            updatedSeats: seats,
           });
         });
       });
@@ -88,9 +90,7 @@ const ticketsController = {
   },
 
   getTicketByTicketId: (req, res) => {
-    const { ticket_id } = req.params; // Lấy ticket_id từ URL params
-
-    // Truy vấn vào database để tìm vé với ticket_id
+    const { ticket_id } = req.params; //
     Ticket.getTicketByTicketId(ticket_id, (err, result) => {
       if (err) {
         return res.status(500).json({ error: err.message });
@@ -99,8 +99,7 @@ const ticketsController = {
         return res.status(404).json({ message: "Ticket not found" });
       }
 
-      // Trả về thông tin vé tìm được
-      res.status(200).json(result[0]); // result[0] là vé đầu tiên tìm thấy
+      res.status(200).json(result[0]);
     });
   },
 };
