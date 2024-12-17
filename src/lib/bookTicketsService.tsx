@@ -11,3 +11,12 @@ export const bookTickets = async (url: string, bookData: IBookTicket) => {
     console.error("Error booking tickets:", err);
   }
 };
+
+export const checkTickets = async (url: string) => {
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (err) {
+    console.log("Error check tickets", err);
+  }
+};

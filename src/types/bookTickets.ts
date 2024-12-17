@@ -1,4 +1,5 @@
 export interface IBookTicket {
+  booking_time?: string;
   ticket_id?: string;
   user_id: number | undefined;
   trip_id: string;

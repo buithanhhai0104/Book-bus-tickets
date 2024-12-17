@@ -19,7 +19,7 @@ const Header: React.FC = () => {
     },
     {
       title: "Tra cứu vé",
-      to: "/",
+      to: "/check",
     },
     {
       title: "Tin tức",
