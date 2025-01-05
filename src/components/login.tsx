@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+
 import { useState } from "react";
 import { apiLogin } from "@/lib/authService";
 import { useRouter } from "next/navigation";
@@ -30,9 +30,6 @@ const Login: React.FC = () => {
   };
   return (
     <div className="w-full max-w-sm bg-white p-2 rounded-lg">
-      <div className="w-full flex justify-center">
-        <Image src="/images/logo.avif" alt="logo" width={121} height={44} />
-      </div>
       <h2 className="text-2xl font-bold text-gray-800  mb-4 mt-4 text-center">
         Login
       </h2>

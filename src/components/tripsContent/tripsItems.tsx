@@ -13,9 +13,9 @@ const TripsItems: React.FC<TripsItemsProps> = ({ newTrips }) => {
       <p className="text-xl font-semibold">
         Kết quả: {newTrips.length} chuyến xe
       </p>
-      {newTrips.map((item) => {
+      {newTrips.map((item, index) => {
         return (
-          <div className="flex w-full shadow-custom rounded-xl" key={item.id}>
+          <div className="flex w-full shadow-custom rounded-xl" key={index}>
             <TripItem tripItem={item} />
           </div>
         );

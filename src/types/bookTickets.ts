@@ -8,4 +8,6 @@ export interface IBookTicket {
   name: string;
   phone: string | undefined;
   email: string;
+  status?: string;
+  expires_at?: string;
 }

@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import { CiUser } from "react-icons/ci";
 import { MdAccountCircle } from "react-icons/md";
+
 const Header: React.FC = () => {
   const navPage = [
     {
@@ -23,7 +24,7 @@ const Header: React.FC = () => {
     },
     {
       title: "Tin tức",
-      to: "/",
+      to: "/news",
     },
     {
       title: "Liên hệ",

@@ -19,14 +19,12 @@ export default function Trips() {
     }
   }, [tripsData]);
 
-  console.log(newTrips);
-
   return (
     <div className="flex flex-col relative top-16 w-[75%] m-auto">
       <SearchBox />
       <div className="grid grid-cols-7 gap-7 text-black mt-12">
         <aside className="col-span-2 ">
-          <TripFilter setNewTrips={setNewTrips} tripsData={newTrips} />
+          <TripFilter setNewTrips={setNewTrips} newTrips={newTrips} />
         </aside>
         <div className="col-span-5">
           <TripsItems newTrips={newTrips} />

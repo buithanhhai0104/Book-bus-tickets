@@ -3,8 +3,8 @@ import React, { createContext, useState, ReactNode, useContext } from "react";
 import { ITrips } from "@/types/trips";
 
 interface TripsContextType {
-  tripsData: ITrips[] | null; // Dữ liệu là mảng hoặc null
-  setTripsData: (tripsData: ITrips[] | null) => void; // Hàm nhận mảng hoặc null
+  tripsData: ITrips[];
+  setTripsData: (tripsData: ITrips[]) => void;
 }
 
 const TripsContext = createContext<TripsContextType | undefined>(undefined);
@@ -15,7 +15,7 @@ interface TripsProviderProps {
 }
 
 export const TripsProvider: React.FC<TripsProviderProps> = ({ children }) => {
-  const [tripsData, setTripsData] = useState<ITrips[] | null>(null); // Khởi tạo là null
+  const [tripsData, setTripsData] = useState<ITrips[]>([]);
 
   return (
     <TripsContext.Provider value={{ tripsData, setTripsData }}>

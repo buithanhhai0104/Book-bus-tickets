@@ -78,7 +78,7 @@ const SearchBox: React.FC = () => {
     };
     fetchTrips();
   }, []);
-  console.log(toLocationList);
+
   return (
     <div className=" relative  p-6 border-[2px] border-orange-300 rounded-2xl shadow-custom bg-white">
       <div className="flex justify-between mb-6">

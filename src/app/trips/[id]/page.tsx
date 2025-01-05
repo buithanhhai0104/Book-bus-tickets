@@ -12,7 +12,6 @@ import BookingSuccess from "@/components/bookingSuccess";
 
 const TripPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const [trip, setTrip] = useState<ITrips | null>(null);
-
   const [bookTicketsData, setBookTicketData] = useState<IBookTicket[] | null>(
     null
   );
@@ -22,12 +21,12 @@ const TripPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const [bookTicketPhone, setBookTicketPhone] = useState<string>("");
   const [bookTicketEmail, setBookTicketEmail] = useState<string>("");
   const [bookingSuccess, setBookingSuccess] = useState(false);
+
   // lấy user từ contexxt
   const { user } = useUser();
 
   const resolvedParams = React.use(params);
   const { id } = resolvedParams || {};
-
   useEffect(() => {
     const fetchTripById = async () => {
       try {
@@ -41,10 +40,10 @@ const TripPage = ({ params }: { params: Promise<{ id: string }> }) => {
     fetchTripById();
   }, [id, bookingSuccess]);
 
-  // hàm dùng để truyền callback xuống component con
   const handleSelectedSeats = (seats: string[]) => {
     setSelectedSeats(seats);
   };
+
   // hàm dùng để book ticket
   const handleBookTicket = async () => {
     if (
@@ -70,7 +69,6 @@ const TripPage = ({ params }: { params: Promise<{ id: string }> }) => {
         "http://localhost:4000/tickets/book-ticket",
         bookTicketData
       );
-      console.log(bookTicket);
       setBookTicketData(bookTicket.tickets);
       setBookingSuccess(true);
       setBookTicketEmail("");
@@ -79,10 +77,6 @@ const TripPage = ({ params }: { params: Promise<{ id: string }> }) => {
     } catch (err) {
       console.log(err);
     }
-  };
-
-  const handleReturnBookingPage = () => {
-    setBookingSuccess(false);
   };
 
   if (!trip) {
@@ -94,7 +88,8 @@ const TripPage = ({ params }: { params: Promise<{ id: string }> }) => {
       <div className=" flex flex-col items-center">
         <BookingSuccess
           bookTicketsData={bookTicketsData}
-          handleReturnBookingPage={handleReturnBookingPage}
+          selectedSeats={selectedSeats}
+          ticketMoney={trip.price}
         />
       </div>
     </div>
@@ -188,7 +183,7 @@ const TripPage = ({ params }: { params: Promise<{ id: string }> }) => {
             <p>
               (*) Quý khách vui lòng có mặt tại bến xuất phát của xe trước ít
               nhất 30 phút giờ xe khởi hành, mang theo thông báo đã thanh toán
-              vé thành công.
+              {/* vé thành công.xx */}
             </p>
             <p>
               (*) Nếu quý khách có nhu cầu trung chuyển, vui lòng liên hệ Tổng
