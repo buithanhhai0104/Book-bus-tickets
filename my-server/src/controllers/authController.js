@@ -2,7 +2,7 @@ const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET || "default_secret_key";
-const isProduction = process.env.NODE_ENV === "production";
+
 exports.register = async (req, res) => {
   const { name, email, username, password } = req.body;
   if (!username || !password || !name || !email) {
@@ -59,7 +59,7 @@ exports.login = async (req, res) => {
       res.cookie("authToken", token, {
         httpOnly: true,
         sameSite: "none",
-        secure: isProduction,
+        secure: true,
         maxAge: 3600000,
       });
       // Nếu mật khẩu đúng
@@ -93,6 +93,6 @@ exports.verifyToken = (req, res, next) => {
 };
 
 exports.logout = (req, res) => {
-  res.clearCookie("authToken"); // Xóa cookie authToken
+  res.clearCookie("authToken");
   res.status(200).json({ message: "Đăng xuất thành công!" });
 };

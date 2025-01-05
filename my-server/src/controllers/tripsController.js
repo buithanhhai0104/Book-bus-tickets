@@ -1,7 +1,6 @@
 const Trip = require("../models/tripsModel");
 const db = require("../config/db");
 const generateDefaultSeats = require("../helpers/seatHelpers");
-
 const tripController = {
   getAllTrips: (req, res) => {
     Trip.getAllTrips((err, results) => {
@@ -18,7 +17,6 @@ const tripController = {
 
       const trip = results[0];
       try {
-        // Kiểm tra xem seats có phải là chuỗi JSON hợp lệ không
         trip.seats =
           typeof trip.seats === "string" ? JSON.parse(trip.seats) : trip.seats;
       } catch (parseError) {

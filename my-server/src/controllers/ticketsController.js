@@ -1,31 +1,20 @@
-const Trip = require("../models/tripsModel");
-const Ticket = require("../models/ticketsModel");
 const { v4: uuidv4 } = require("uuid");
+const Ticket = require("../models/ticketsModel");
+const Trip = require("../models/tripsModel");
+const moment = require("moment");
+const db = require("../config/db");
 const ticketsController = {
   bookTicket: (req, res) => {
     const { user_id, trip_id, seat_numbers, email, name, phone } = req.body;
 
-    // Kiểm tra các trường bắt buộc
-    if (
-      !user_id ||
-      !trip_id ||
-      !Array.isArray(seat_numbers) ||
-      seat_numbers.length === 0 ||
-      !email ||
-      !name ||
-      !phone
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Missing required fields or invalid seat numbers." });
-    }
+    // Các bước kiểm tra đầu vào đã được thực hiện ở trên
 
-    // Kiểm tra nếu chuyến đi tồn tại
+    // Truy vấn dữ liệu chuyến đi
     Trip.getTripById(trip_id, (err, results) => {
-      if (err) return res.status(500).json({ error: "Failed to check trip." });
-      if (results.length === 0) {
-        return res.status(404).json({ message: "Trip not found" });
-      }
+      if (err)
+        return res.status(500).json({ error: "Không thể kiểm tra chuyến đi." });
+      if (results.length === 0)
+        return res.status(404).json({ message: "Chuyến đi không tồn tại" });
 
       const trip = results[0];
       let seats;
@@ -33,10 +22,12 @@ const ticketsController = {
         seats =
           typeof trip.seats === "string" ? JSON.parse(trip.seats) : trip.seats;
       } catch (e) {
-        return res.status(500).json({ error: "Failed to parse seats data." });
+        return res
+          .status(500)
+          .json({ error: "Không thể phân tích dữ liệu ghế." });
       }
 
-      // Kiểm tra trạng thái của ghế
+      // Kiểm tra và cập nhật ghế
       const unavailableSeats = seat_numbers.filter((seat) => {
         return !seats.some(
           (s) => s.seat_number === seat && s.status === "available"
@@ -44,45 +35,66 @@ const ticketsController = {
       });
 
       if (unavailableSeats.length > 0) {
-        return res.status(400).json({
-          nessage: "Ghế đã được đặt",
-        });
+        return res.status(400).json({ message: "Ghế đã được đặt" });
       }
 
-      // Cập nhật trạng thái ghế từ 'available' sang 'booked'
       seats = seats.map((seat) => {
         if (seat_numbers.includes(seat.seat_number)) {
-          seat.status = "booked"; // Đánh dấu ghế là đã đặt
+          seat.status = "booked";
         }
         return seat;
       });
+      const expires_at = moment()
+        .add(10, "minutes")
+        .format("YYYY-MM-DD HH:mm:ss");
+      console.log("Expires at:", expires_at);
+      // Tạo dữ liệu vé
+      const ticketData = seat_numbers.map((seat_number) => ({
+        ticket_id: uuidv4(),
+        user_id,
+        trip_id,
+        seat_number,
+        email,
+        name,
+        phone,
+        status: "Chưa thanh toán",
+        expires_at,
+      }));
 
-      // Cập nhật lại thông tin ghế trong chuyến đi
-      Trip.updateTripSeats(trip_id, seats, (err) => {
+      // Thực hiện giao dịch
+      db.beginTransaction((err) => {
         if (err)
-          return res.status(500).json({ error: "Failed to update seats." });
+          return res.status(500).json({ error: "Lỗi bắt đầu giao dịch." });
 
-        // Tạo dữ liệu vé, mỗi ghế có một ticket_id riêng
-        const ticketData = seat_numbers.map((seat_number) => ({
-          ticket_id: uuidv4(), // Tạo ticket_id riêng cho mỗi vé
-          user_id,
-          trip_id,
-          seat_number,
-          email,
-          name,
-          phone,
-          status: "booked",
-        }));
+        // Cập nhật ghế
+        Trip.updateTripSeats(trip_id, seats, (err) => {
+          if (err) {
+            return db.rollback(() => {
+              res.status(500).json({ error: "Không thể cập nhật ghế." });
+            });
+          }
 
-        // Lưu thông tin vé vào bảng tickets
-        Ticket.createMultipleTickets(ticketData, (err, ticketResults) => {
-          if (err) return res.status(500).json({ error: err.message });
+          // Lưu các vé vào cơ sở dữ liệu
+          Ticket.createMultipleTickets(ticketData, (err, ticketResults) => {
+            if (err) {
+              return db.rollback(() => {
+                res.status(500).json({ error: "Không thể tạo vé." });
+              });
+            }
 
-          // Trả về danh sách vé đã đặt
-          res.status(201).json({
-            message: "Đặt vé thành công",
-            tickets: ticketData,
-            updatedSeats: seats,
+            // Commit giao dịch
+            db.commit((err) => {
+              if (err) {
+                return db.rollback(() => {
+                  res.status(500).json({ error: "Lỗi khi commit giao dịch." });
+                });
+              }
+              res.status(201).json({
+                message: "Đặt vé thành công",
+                tickets: ticketData,
+                updatedSeats: seats,
+              });
+            });
           });
         });
       });
@@ -90,17 +102,32 @@ const ticketsController = {
   },
 
   getTicketByTicketId: (req, res) => {
-    const { ticket_id } = req.params; //
+    const { ticket_id } = req.params;
     Ticket.getTicketByTicketId(ticket_id, (err, result) => {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
       if (result.length === 0) {
-        return res.status(404).json({ message: "Ticket not found" });
+        return res.status(404).json({ message: "Vé không tồn tại" });
       }
-
       res.status(200).json(result[0]);
     });
+  },
+
+  updateMultipleTicketStatus: async (req, res) => {
+    const { changeTicketStatus } = req.body;
+
+    if (!Array.isArray(changeTicketStatus) || changeTicketStatus.length === 0) {
+      return res.status(400).json({ error: "Dữ liệu vé không hợp lệ." });
+    }
+
+    try {
+      // Sử dụng async/await trong model nếu có thể
+      await Ticket.updateMultipleTicketStatus(changeTicketStatus);
+      res.status(200).json({ message: "Cập nhật trạng thái vé thành công." });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   },
 };
 

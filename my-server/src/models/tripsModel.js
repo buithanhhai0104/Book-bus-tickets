@@ -96,6 +96,13 @@ const Trip = {
     db.query(query, [JSON.stringify(seats), id], callback);
   },
 
+  getSeatsByTripId: async (tripId) => {
+    const [rows] = await db.query("SELECT seats FROM trips WHERE id = ?", [
+      tripId,
+    ]);
+    return rows.length ? rows[0] : null;
+  },
+
   // 5. Xóa chuyến xe
   deleteTrip: (id, callback) => {
     const sql = "DELETE FROM trips WHERE id = ?";

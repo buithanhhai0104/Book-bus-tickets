@@ -21,5 +21,5 @@ router.delete("/trips/:id", tripController.deleteTrip);
 
 // tìm kiếm chuyến đi
 router.get("/search", tripController.searchTrips);
-// thêm ghế vào chuyến đi
+
 module.exports = router;

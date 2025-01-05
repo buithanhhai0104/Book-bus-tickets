@@ -8,6 +8,9 @@ const authRoutes = require("./src/routes/authRoutes");
 const authController = require("./src/controllers/authController");
 const tripRoutes = require("./src/routes/tripRoutes");
 const ticketsRoutes = require("./src/routes/ticketsRoutes");
+const newsRoutes = require("./src/routes/newsRoutes");
+const paypalRoutes = require("./src/routes/paypalRoutes");
+const startExpireTicketsJob = require("./jobs/expireTicketsJob");
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -29,6 +32,8 @@ app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/api", tripRoutes);
 app.use("/tickets", ticketsRoutes);
+app.use("/news", newsRoutes);
+app.use("/paypal", paypalRoutes);
 app.get("/userinfo", authController.verifyToken, (req, res) => {
   res.status(200).json({
     message: "Thông tin người dùng",
@@ -38,7 +43,7 @@ app.get("/userinfo", authController.verifyToken, (req, res) => {
     },
   });
 });
-
+startExpireTicketsJob();
 // Server listening
 app.listen(port, () => {
   console.log(`Server đang chạy tại http://localhost:${port}`);

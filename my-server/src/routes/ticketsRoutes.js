@@ -8,4 +8,5 @@ router.post(
   ticketsController.bookTicket
 );
 router.get("/:ticket_id", ticketsController.getTicketByTicketId);
+router.put("/status", ticketsController.updateMultipleTicketStatus);
 module.exports = router;
