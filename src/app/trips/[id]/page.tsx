@@ -82,7 +82,7 @@ const TripPage = ({ params }: { params: Promise<{ id: string }> }) => {
   if (!trip) {
     return <div>Không tìm thấy chuyến đi!</div>;
   }
-
+  console.log(trip);
   return bookingSuccess ? (
     <div className=" flex flex-col relative top-16 text-black">
       <div className=" flex flex-col items-center">

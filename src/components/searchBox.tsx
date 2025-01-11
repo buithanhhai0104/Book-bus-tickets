@@ -1,5 +1,5 @@
 "use client";
-import { apiTrips, apiTripsSearch } from "@/lib/tripService";
+import { getAllTrips, apiTripsSearch } from "@/lib/tripService";
 import { useEffect, useState } from "react";
 import { useTrips } from "@/context/tripsContext";
 import { useRouter } from "next/navigation";
@@ -28,7 +28,7 @@ const SearchBox: React.FC = () => {
     const params: IParams = {
       from_location: departure,
       to_location: destination,
-      departure_date: "2024-12-16",
+      departure_date: travelDate,
     };
 
     try {
@@ -52,7 +52,7 @@ const SearchBox: React.FC = () => {
       const seenFrom = new Set();
       const seenTo = new Set();
       try {
-        const res = await apiTrips("http://localhost:4000/api/trips");
+        const res = await getAllTrips();
         if (res.length > 0) {
           const formLocation = res.filter((item: ITrips) => {
             if (seenFrom.has(item.from_location)) {

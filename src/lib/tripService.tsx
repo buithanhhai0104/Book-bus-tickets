@@ -1,3 +1,4 @@
+import { ICreateTrip, ITrips } from "@/types/trips";
 import axios from "axios";
 
 interface IParams {
@@ -6,12 +7,70 @@ interface IParams {
   departure_date: string;
 }
 
-export const apiTrips = async (url: string) => {
+export const getAllTrips = async () => {
   try {
-    const response = await axios.get(url);
+    const response = await axios.get("http://localhost:4000/api/trips");
     return response.data;
   } catch (err) {
     console.log("Lỗi gọi api Trips", err);
+  }
+};
+
+export const createTrip = async (createTripForm: ICreateTrip) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:4000/api/trips",
+      createTripForm,
+      {
+        headers: {
+          "Content-Type": "application/json", // Đảm bảo định dạng JSON
+        },
+        withCredentials: true, // Để gửi cookie
+      }
+    );
+    return response.data;
+  } catch (err) {
+    console.log("Lỗi thêm chuyến xe", err);
+  }
+};
+export const deleteTrip = async (id: number) => {
+  try {
+    const response = await axios.delete(
+      `http://localhost:4000/api/trips/${id}`,
+      {
+        withCredentials: true, // Để gửi cookie
+      }
+    );
+    return response.data;
+  } catch (err) {
+    console.log("Lỗi xóa chuyến xe", err);
+  }
+};
+
+export const UpdateTripbyId = async (
+  id: number,
+  modifiedTrip: ITrips | null
+) => {
+  try {
+    if (modifiedTrip?.departure_time) {
+      modifiedTrip.departure_time = new Date(modifiedTrip.departure_time)
+        .toISOString()
+        .slice(0, 19)
+        .replace("T", " ");
+    }
+    const respone = await axios.put(
+      `http://localhost:4000/api/trips/${id}`,
+      modifiedTrip,
+      {
+        headers: {
+          "Content-Type": "application/json", // Đảm bảo định dạng JSON
+        },
+        withCredentials: true, // Để gửi cookie
+      }
+    );
+    return respone.data;
+  } catch (err) {
+    console.log("Lỗi chỉnh sửa chuyến đi", err);
   }
 };
 
