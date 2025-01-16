@@ -41,7 +41,7 @@ const Header: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await getUser("http://localhost:4000/userinfo");
+        const res = await getUser();
         setUser(res.userdata);
       } catch (err) {
         console.log(err);

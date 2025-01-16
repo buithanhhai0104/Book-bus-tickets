@@ -37,9 +37,26 @@ export const updateTicketStatus = async (
 ): Promise<UpdateTicketStatusResponse> => {
   try {
     const response = await axios.put(url, { changeTicketStatus });
-    return response.data; // Trả về dữ liệu từ response
+    return response.data;
   } catch (err) {
     console.error("Error updating ticket status:", err);
     throw new Error("Updating ticket status failed");
+  }
+};
+
+export const getTickets = async () => {
+  try {
+    const response = await axios.get("http://localhost:4000/tickets");
+    return response.data;
+  } catch (err) {
+    console.log("Lỗi khi lấy dữ liệu tất cả vé", err);
+  }
+};
+export const deleteTicketById = async (id: string) => {
+  try {
+    const response = await axios.delete(`http://localhost:4000/tickets/${id}`);
+    return response.data;
+  } catch (err) {
+    console.log("Lỗi xóa vé theo id", err);
   }
 };

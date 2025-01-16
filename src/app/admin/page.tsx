@@ -1,37 +1,50 @@
 "use client";
+import AllTickets from "@/components/admin/allTickets";
 import AllTrips from "@/components/admin/allTrips";
 import CreateTrip from "@/components/admin/createTrip";
+import Users from "@/components/admin/users";
 import React, { useState } from "react";
 import { BsChevronDown, BsChevronRight } from "react-icons/bs";
+
+type ActiveComponent =
+  | "createTrip"
+  | "allTrips"
+  | "users"
+  | "allTickets"
+  | "paidTickets"
+  | "unpaidTickets"
+  | "canceledTickets"
+  | "news";
 
 const Manage = () => {
   const [showTripsList, setShowTripsList] = useState<boolean>(false);
   const [showTicketsList, setShowTicketsList] = useState<boolean>(false);
-  const [activeComponent, setActiveComponent] = useState<string>("trips");
+  const [activeComponent, setActiveComponent] =
+    useState<ActiveComponent>("allTrips");
 
-  const renderComponent = () => {
-    switch (activeComponent) {
-      case "Thêm chuyến đi":
-        return <CreateTrip />;
-      case "Tất cả chuyến đi":
-        return <AllTrips />;
-      case "users":
-        return <div className="text-gray-800 p-4">Danh sách người dùng</div>;
-      case "tickets":
-        return <div className="text-gray-800 p-4">Quản lý vé</div>;
-      default:
-        return;
-    }
+  const componentMap: Record<ActiveComponent, JSX.Element> = {
+    createTrip: <CreateTrip />,
+    allTrips: <AllTrips />,
+    users: <Users />,
+    news: <div>bài báo</div>,
+    allTickets: <AllTickets type="Tất cả vé" />,
+    paidTickets: <AllTickets type="Vé đã thanh toán" />,
+    unpaidTickets: <AllTickets type="Vé chưa thanh toán" />,
+    canceledTickets: <AllTickets type="Vé đã hủy" />,
   };
 
-  const tripManagementList = ["Tất cả chuyến đi", "Thêm chuyến đi"];
-  const ticketManagementList = [
-    "Tất cả vé",
-    "Vé đã thanh toán",
-    "Vé chưa thanh toán",
-    "Vé đã hủy",
-  ];
+  const renderComponent = () => componentMap[activeComponent] || null;
 
+  const tripManagementList = [
+    { name: "Tất cả chuyến đi", key: "allTrips" },
+    { name: "Thêm chuyến đi", key: "createTrip" },
+  ];
+  const ticketManagementList = [
+    { name: "Tất cả vé", key: "allTickets" },
+    { name: "Vé đã thanh toán", key: "paidTickets" },
+    { name: "Vé chưa thanh toán", key: "unpaidTickets" },
+    { name: "Vé đã hủy", key: "canceledTickets" },
+  ];
   return (
     <div className="flex relative top-[60px] w-full">
       {/* Sidebar */}
@@ -63,14 +76,16 @@ const Manage = () => {
                   {tripManagementList.map((item, index) => (
                     <button
                       key={index}
-                      onClick={() => setActiveComponent(item)}
+                      onClick={() =>
+                        setActiveComponent(item.key as ActiveComponent)
+                      }
                       className={`text-base px-2 py-1 rounded hover:bg-orange-100 hover:text-orange-600 ${
-                        activeComponent === item
+                        activeComponent === item.key
                           ? "bg-orange-50 font-medium text-orange-600"
                           : "text-gray-700"
                       }`}
                     >
-                      + {item}
+                      + {item.name}
                     </button>
                   ))}
                 </div>
@@ -87,6 +102,19 @@ const Manage = () => {
                 }`}
               >
                 <span>Quản lý người dùng</span>
+              </button>
+            </li>
+            {/* Users Management */}
+            <li>
+              <button
+                onClick={() => setActiveComponent("news")}
+                className={`w-full flex items-center gap-3 px-4 py-3 text-left text-lg font-medium text-gray-700 hover:bg-orange-100 hover:text-orange-600 transition-colors ${
+                  activeComponent === "users"
+                    ? "bg-orange-50 text-orange-600"
+                    : ""
+                }`}
+              >
+                <span>Quản lý bài báo</span>
               </button>
             </li>
             {/* Tickets Management */}
@@ -111,14 +139,16 @@ const Manage = () => {
                   {ticketManagementList.map((item, index) => (
                     <button
                       key={index}
-                      onClick={() => setActiveComponent(item)}
+                      onClick={() =>
+                        setActiveComponent(item.key as ActiveComponent)
+                      }
                       className={`text-base px-2 py-1 rounded hover:bg-orange-100 hover:text-orange-600 ${
-                        activeComponent === item
+                        activeComponent === item.key
                           ? "bg-orange-50 font-medium text-orange-600"
                           : "text-gray-700"
                       }`}
                     >
-                      + {item}
+                      + {item.name}
                     </button>
                   ))}
                 </div>

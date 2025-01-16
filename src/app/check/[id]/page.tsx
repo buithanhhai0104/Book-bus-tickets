@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { IBookTicket } from "@/types/bookTickets";
-import { checkTickets } from "@/lib/bookTicketsService";
+import { checkTickets } from "@/lib/ticketsService";
 import { handlePaymentSuccess } from "@/utils/paymentUtils";
 import CountdownTimer from "@/components/countdownTimer";
 import PayPalButton from "@/components/PayPalButton";

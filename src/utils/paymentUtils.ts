@@ -1,5 +1,5 @@
 import { IBookTicket } from "@/types/bookTickets";
-import { updateTicketStatus } from "@/lib/bookTicketsService";
+import { updateTicketStatus } from "@/lib/ticketsService";
 interface IChangeTicketStatus {
   ticket_id: string;
   status: string;

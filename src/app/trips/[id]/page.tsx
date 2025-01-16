@@ -6,7 +6,7 @@ import { ITrips } from "@/types/trips";
 import Seats from "@/components/seats";
 import TripInfomation from "@/components/tripInfomation";
 import { useUser } from "@/context/authContext";
-import { bookTickets } from "@/lib/bookTicketsService";
+import { bookTickets } from "@/lib/ticketsService";
 import { IBookTicket } from "@/types/bookTickets";
 import BookingSuccess from "@/components/bookingSuccess";
 
@@ -59,6 +59,8 @@ const TripPage = ({ params }: { params: Promise<{ id: string }> }) => {
     const bookTicketData = {
       user_id: user?.id,
       trip_id: id,
+      from_location: trip?.from_location,
+      to_location: trip?.to_location,
       seat_numbers: selectedSeats,
       name: bookTicketName,
       phone: bookTicketPhone,
@@ -89,7 +91,7 @@ const TripPage = ({ params }: { params: Promise<{ id: string }> }) => {
         <BookingSuccess
           bookTicketsData={bookTicketsData}
           selectedSeats={selectedSeats}
-          ticketMoney={trip.price}
+          detailTrip={trip}
         />
       </div>
     </div>

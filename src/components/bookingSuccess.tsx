@@ -4,18 +4,19 @@ import React, { useState } from "react";
 import PayPalButton from "./PayPalButton";
 import CountdownTimer from "./countdownTimer";
 import { handlePaymentSuccess } from "@/utils/paymentUtils";
+import { ITrips } from "@/types/trips";
 interface IBookingSuccessProps {
   bookTicketsData: IBookTicket[] | null;
   selectedSeats: string[];
-  ticketMoney: number;
+  detailTrip: ITrips;
 }
 
 const BookingSuccess: React.FC<IBookingSuccessProps> = ({
   bookTicketsData,
   selectedSeats,
-  ticketMoney,
+  detailTrip,
 }) => {
-  const totalAmount = ticketMoney * selectedSeats.length;
+  const totalAmount = detailTrip.price * selectedSeats.length;
   const [successfulPayment, setSuccessfulPayment] = useState<boolean>(false);
   const handlePayment = async (details: unknown) => {
     const result = await handlePaymentSuccess(bookTicketsData);
@@ -103,6 +104,18 @@ const BookingSuccess: React.FC<IBookingSuccessProps> = ({
                 </div>
                 <div className="mt-2 text-gray-700 space-y-1">
                   <p>
+                    <span className="font-medium">Điểm đi:</span>{" "}
+                    {ticket.from_location}
+                  </p>
+                  <p>
+                    <span className="font-medium">Điểm đén:</span>{" "}
+                    {ticket.to_location}
+                  </p>
+                  <p>
+                    <span className="font-medium">Mã chuyến đi:</span>{" "}
+                    {ticket.trip_id}
+                  </p>
+                  <p>
                     <span className="font-medium">Họ và tên:</span>{" "}
                     {ticket.name}
                   </p>
@@ -116,10 +129,6 @@ const BookingSuccess: React.FC<IBookingSuccessProps> = ({
                   <p>
                     <span className="font-medium">Số ghế:</span>{" "}
                     {ticket.seat_number}
-                  </p>
-                  <p>
-                    <span className="font-medium">Chuyến đi:</span>{" "}
-                    {ticket.trip_id}
                   </p>
                   <p>
                     <span className="font-medium">Trạng thái thanh toán:</span>{" "}

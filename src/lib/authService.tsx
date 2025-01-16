@@ -39,9 +39,9 @@ export const apiRegister = async (url: string, registerData: IRegisterData) => {
   }
 };
 
-export const getUser = async (url: string) => {
+export const getUser = async () => {
   try {
-    const response = await axios.get(url, {
+    const response = await axios.get("http://localhost:4000/userinfo", {
       withCredentials: true,
     });
     return response.data;

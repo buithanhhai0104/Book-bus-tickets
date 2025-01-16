@@ -150,7 +150,7 @@ const CreateTrip: React.FC = () => {
             <option value="" disabled>
               Chọn loại xe
             </option>
-            <option value="Limouse">Limouse</option>
+            <option value="Limousine">Limousine</option>
             <option value="Ghế">Ghế</option>
             <option value="Giường">Giường</option>
           </select>

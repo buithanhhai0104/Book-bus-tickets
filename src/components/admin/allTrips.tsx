@@ -1,4 +1,5 @@
 "use client";
+import { getTickets } from "@/lib/ticketsService";
 import { deleteTrip, getAllTrips, UpdateTripbyId } from "@/lib/tripService";
 import { ITrips } from "@/types/trips";
 import React, { useEffect, useState } from "react";
@@ -17,10 +18,12 @@ const AllTrips = () => {
     setLoading(true);
     try {
       const res = await getAllTrips();
+      const resp = await getTickets();
       if (res) {
         setTrips(res);
         setTripsFillter(res);
       }
+      console.log(resp);
     } catch (err) {
       console.error("Lỗi lấy tất cả chuyến đi:", err);
     } finally {
@@ -104,6 +107,7 @@ const AllTrips = () => {
   const handleSave = async (id: number) => {
     try {
       const res = await UpdateTripbyId(id, currentTrip);
+
       if (res) {
         fetchAllTrips();
       }
@@ -113,11 +117,6 @@ const AllTrips = () => {
 
     setEditMode(false);
   };
-  console.log(currentTrip);
-
-  if (loading) {
-    return <div>Đang tải dữ liệu...</div>;
-  }
   const handleDelete = async (id: number) => {
     try {
       const res = await deleteTrip(id);
@@ -129,9 +128,14 @@ const AllTrips = () => {
     }
     setEditMode(false);
   };
+
+  if (loading) {
+    return <div>Đang tải dữ liệu...</div>;
+  }
+
   return (
-    <div className="flex flex-col flex-1 gap-10 px-5 py-10 bg-gray-100 min-h-screen">
-      <div className="flex justify-between mb-6">
+    <div className="flex flex-col flex-1  px-5 py-10 bg-gray-100 min-h-screen">
+      <div className="flex  flex-col  gap-10 justify-between mb-4">
         <h2 className="text-3xl font-semibold text-blue-800">
           Danh sách chuyến đi
         </h2>
@@ -141,7 +145,7 @@ const AllTrips = () => {
             name="form_location"
             value={activeLocation}
             onChange={(e) => handleFilterLocation(e.target.value)}
-            className={`px-4 py-2 rounded-full text-white bg-blue-500 hover:bg-blue-600 transition-colors`}
+            className={`px-4 py-2 rounded-full text-black  border-[3px] border-blue-500 `}
             required
           >
             <option value="Tất cả">Tất cả</option>
@@ -225,7 +229,10 @@ const AllTrips = () => {
                     <p className="text-sm">{trip.to_location}</p>
                   </div>
                 </div>
-
+                <div className="flex gap-1 items-start text-gray-600">
+                  <span> Mã số xe:</span>
+                  {trip.id}
+                </div>
                 {/* Ngày khởi hành */}
                 <div className="flex flex-col items-start text-gray-600">
                   <span>Ngày:</span>
@@ -233,12 +240,12 @@ const AllTrips = () => {
                 </div>
 
                 {/* Thông tin ghế */}
-                <div className="text-gray-700">
+                <div className=" hidden lg:block text-gray-700">
                   Ghế: {reservedSeats.length}/{trip.seats.length}
                 </div>
 
                 {/* Giá vé */}
-                <div className="text-xl font-semibold text-teal-600">
+                <div className="hidden lg:block text-xl font-semibold text-teal-600">
                   {formatCurrency(trip.price)}
                 </div>
 
@@ -246,13 +253,13 @@ const AllTrips = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEdit(trip)}
-                    className="px-4 py-2 rounded-full text-white bg-green-500 hover:bg-green-600 transition-colors"
+                    className="px-4 py-2 rounded-lg text-white bg-green-500 hover:bg-green-600 transition-colors"
                   >
-                    Chỉnh sửa
+                    Sửa
                   </button>
                   <button
                     onClick={() => handleDelete(trip.id)}
-                    className="px-4 py-2 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors"
+                    className="px-4 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors"
                   >
                     Xóa
                   </button>

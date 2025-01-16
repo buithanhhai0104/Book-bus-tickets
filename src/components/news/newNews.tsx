@@ -5,19 +5,23 @@ import Image from "next/image";
 import React, { useRef, useEffect, useState } from "react";
 import { GrNext } from "react-icons/gr";
 import { useRouter } from "next/navigation";
+
 interface INewNewsProps {
   newsData: INews[];
 }
+
 const NewNews: React.FC<INewNewsProps> = ({ newsData }) => {
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const router = useRouter();
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) =>
-        prevIndex === newsData.length - 1 ? 0 : prevIndex + 3
-      );
-    }, 2000);
+      setCurrentIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 3) % newsData.length;
+        return nextIndex;
+      });
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [newsData.length]);
@@ -52,13 +56,12 @@ const NewNews: React.FC<INewNewsProps> = ({ newsData }) => {
       </p>
       <div
         ref={sliderRef}
-        className=" w-[78%] m-auto overflow-auto overflow-x-hidden flex gap-8  text-black mt-4"
+        className=" w-[78%] m-auto overflow-auto overflow-x-hidden flex gap-8 text-black mt-4"
       >
         {newsData.map((news) => {
           const date = new Date(news.created_at);
-
-          // Định dạng ngày tháng năm
           const formattedDate = date.toLocaleDateString("vi-VN");
+
           return (
             <div className="h-[278px]" key={news.id}>
               <div className=" relative w-full h-[190px]">
