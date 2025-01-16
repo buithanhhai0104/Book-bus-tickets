@@ -9,8 +9,8 @@ const User = {
 
   // Cập nhật thông tin người dùng
   updateUser: (id, data, callback) => {
-    const sql = "UPDATE users SET name = ?, email = ?, age = ? WHERE id = ?";
-    db.query(sql, [data.name, data.email, data.age, id], callback);
+    const sql = "UPDATE users SET name = ?, email = ?, role = ? WHERE id = ?";
+    db.query(sql, [data.name, data.email, data.role, id], callback);
   },
 
   // Xóa người dùng
@@ -38,11 +38,15 @@ const User = {
     });
   },
   //Tìm tên tài khoản người dùng theo Name
-  findByUserName: (username, callback) => {
+  findByUsername: (username, callback) => {
     const sql = "SELECT * FROM users WHERE username = ?";
     db.query(sql, [username], callback);
   },
 
+  findByUsernameAndEmail: (username, email, callback) => {
+    const sql = "SELECT * FROM users WHERE username = ? AND email = ?";
+    db.query(sql, [username, email], callback);
+  },
   // thêm tài khoản người dùng
   createAccount: (data, callback) => {
     const sql = `

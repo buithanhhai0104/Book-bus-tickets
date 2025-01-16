@@ -4,7 +4,7 @@ const Ticket = {
   // Hàm tạo nhiều vé cùng lúc
   createMultipleTickets: (ticketData, callback) => {
     const query = `
-    INSERT INTO tickets (ticket_id, user_id, trip_id, seat_number, email, name, phone, status, expires_at)
+    INSERT INTO tickets (ticket_id, user_id, trip_id, seat_number, email, name, phone, status, expires_at, to_location, from_location)
     VALUES ?;
   `;
     const values = ticketData.map((ticket) => [
@@ -16,10 +16,12 @@ const Ticket = {
       ticket.name,
       ticket.phone,
       ticket.status,
-      ticket.expires_at, // Đảm bảo rằng expires_at đã được đưa vào
+      ticket.expires_at,
+      ticket.to_location,
+      ticket.from_location,
     ]);
 
-    console.log("Executing query with values:", values); // Kiểm tra giá trị
+    console.log("Executing query with values:", values);
     db.query(query, [values], callback);
   },
   getTicketByTicketId: (ticket_id, callback) => {
@@ -78,6 +80,17 @@ const Ticket = {
       }
       callback(null, result);
     });
+  },
+
+  getAllTickets: (callback) => {
+    const query = `SELECT * FROM tickets`;
+    db.query(query, callback);
+  },
+
+  // Hàm xóa vé
+  deleteTicketById: (ticketId, callback) => {
+    const query = `DELETE FROM tickets WHERE ticket_id = ?`;
+    db.query(query, [ticketId], callback);
   },
 };
 

@@ -11,12 +11,14 @@ exports.register = async (req, res) => {
       .json({ message: "Username và password là bắt buộc" });
   }
 
-  User.findByUserName(username, async (error, results) => {
+  User.findByUsernameAndEmail(username, email, async (error, results) => {
     if (error)
       return res.status(500).json({ message: "Lỗi truy vấn cơ sở dữ liệu" });
 
     if (results.length > 0) {
-      return res.status(400).json({ message: "Username đã tồn tại" });
+      return res
+        .status(400)
+        .json({ message: "Username hoặc email đã tồn tại" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -36,7 +38,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { username, password } = req.body;
 
-  User.findByUserName(username, async (error, results) => {
+  User.findByUsername(username, async (error, results) => {
     if (error)
       return res.status(500).json({ message: "Lỗi truy vấn cơ sở dữ liệu" });
     if (results.length === 0) {
@@ -50,18 +52,31 @@ exports.login = async (req, res) => {
         return res.status(400).json({ message: "Sai mật khẩu" });
       }
       const token = jwt.sign(
-        { username: results[0].username, id: results[0].id },
+        {
+          username: results[0].username,
+          id: results[0].id,
+          role: results[0].role,
+        },
         JWT_SECRET,
         {
           expiresIn: "1h",
         }
       );
-      res.cookie("authToken", token, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-        maxAge: 3600000,
-      });
+      if (results[0].role === "admin") {
+        res.cookie("authToken", token, {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+        });
+      } else {
+        res.cookie("authToken", token, {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+          maxAge: 3600000,
+        });
+      }
+
       // Nếu mật khẩu đúng
       res.status(200).json({
         message: "Đăng nhập thành công!",
@@ -69,6 +84,7 @@ exports.login = async (req, res) => {
           full_name: results[0].name,
           username: results[0].username,
           id: results[0].id,
+          role: results[0].role,
         },
       });
     } catch (err) {
@@ -90,6 +106,13 @@ exports.verifyToken = (req, res, next) => {
     req.user = decoded;
     next();
   });
+};
+
+exports.verifyAdmin = (req, res, next) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "Bạn không có quyền truy cập!" });
+  }
+  next();
 };
 
 exports.logout = (req, res) => {

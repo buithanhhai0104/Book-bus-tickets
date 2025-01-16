@@ -40,6 +40,7 @@ app.get("/userinfo", authController.verifyToken, (req, res) => {
     userdata: {
       username: req.user.username,
       id: req.user.id,
+      role: req.user.role,
     },
   });
 });

@@ -12,12 +12,26 @@ router.get(
 );
 
 // Thêm chuyến đi
-router.post("/trips", tripController.createTrip);
-
+router.post(
+  "/trips",
+  authController.verifyToken,
+  authController.verifyAdmin,
+  tripController.createTrip
+);
 // Sửa chuyến đi
-router.put("/trips/:id", tripController.updateTrip);
+router.put(
+  "/trips/:id",
+  authController.verifyToken,
+  authController.verifyAdmin,
+  tripController.updateTrip
+);
 // xóa chuyến đi
-router.delete("/trips/:id", tripController.deleteTrip);
+router.delete(
+  "/trips/:id",
+  authController.verifyToken,
+  authController.verifyAdmin,
+  tripController.deleteTrip
+);
 
 // tìm kiếm chuyến đi
 router.get("/search", tripController.searchTrips);

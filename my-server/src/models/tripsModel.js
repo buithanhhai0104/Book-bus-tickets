@@ -103,10 +103,18 @@ const Trip = {
     return rows.length ? rows[0] : null;
   },
 
-  // 5. Xóa chuyến xe
   deleteTrip: (id, callback) => {
-    const sql = "DELETE FROM trips WHERE id = ?";
-    db.query(sql, [id], callback);
+    const sqlDeleteTickets = "DELETE FROM tickets WHERE trip_id = ?";
+    const sqlDeleteTrip = "DELETE FROM trips WHERE id = ?";
+
+    // Xóa vé trước
+    db.query(sqlDeleteTickets, [id], (err, result) => {
+      if (err) {
+        return callback(err);
+      }
+      // Sau khi xóa vé, tiếp tục xóa chuyến xe
+      db.query(sqlDeleteTrip, [id], callback);
+    });
   },
 
   getTripsBySearch: (from_location, to_location, departure_date, callback) => {

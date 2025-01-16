@@ -5,8 +5,17 @@ const moment = require("moment");
 const db = require("../config/db");
 const ticketsController = {
   bookTicket: (req, res) => {
-    const { user_id, trip_id, seat_numbers, email, name, phone } = req.body;
-
+    const {
+      user_id,
+      trip_id,
+      seat_numbers,
+      email,
+      name,
+      phone,
+      to_location,
+      from_location,
+    } = req.body;
+    console.log(req.body);
     // Các bước kiểm tra đầu vào đã được thực hiện ở trên
 
     // Truy vấn dữ liệu chuyến đi
@@ -45,7 +54,7 @@ const ticketsController = {
         return seat;
       });
       const expires_at = moment()
-        .add(10, "minutes")
+        .add(1, "minutes")
         .format("YYYY-MM-DD HH:mm:ss");
       console.log("Expires at:", expires_at);
       // Tạo dữ liệu vé
@@ -57,6 +66,8 @@ const ticketsController = {
         email,
         name,
         phone,
+        to_location,
+        from_location,
         status: "Chưa thanh toán",
         expires_at,
       }));
@@ -128,6 +139,29 @@ const ticketsController = {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
+  },
+
+  getAllTickets: (req, res) => {
+    Ticket.getAllTickets((err, results) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(200).json(results);
+    });
+  },
+
+  // Xóa vé theo ID
+  deleteTicketById: (req, res) => {
+    const { ticket_id } = req.params;
+    Ticket.deleteTicketById(ticket_id, (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Vé không tồn tại" });
+      }
+      res.status(200).json({ message: "Xóa vé thành công" });
+    });
   },
 };
 

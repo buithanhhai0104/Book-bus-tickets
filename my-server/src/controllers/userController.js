@@ -12,8 +12,8 @@ exports.getUsers = (req, res) => {
 
 exports.updateUser = (req, res) => {
   const { id } = req.params;
-  const { name, email, age } = req.body;
-  User.updateUser(id, { name, email, age }, (err) => {
+  const { name, email, role } = req.body;
+  User.updateUser(id, { name, email, role }, (err) => {
     if (err) {
       res.status(500).send(err);
       return;

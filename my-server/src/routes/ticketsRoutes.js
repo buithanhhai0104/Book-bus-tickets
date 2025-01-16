@@ -9,4 +9,8 @@ router.post(
 );
 router.get("/:ticket_id", ticketsController.getTicketByTicketId);
 router.put("/status", ticketsController.updateMultipleTicketStatus);
+router.get("/", ticketsController.getAllTickets);
+
+// Xóa vé theo ID
+router.delete("/:ticket_id", ticketsController.deleteTicketById);
 module.exports = router;

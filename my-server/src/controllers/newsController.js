@@ -7,19 +7,7 @@ const newsController = {
         console.error("Error fetching news:", err);
         return res.status(500).json({ error: "Failed to fetch news" });
       }
-
-      // Chuyển đổi ảnh từ Buffer sang Base64
-      const newsWithImages = results.map((news) => {
-        if (news.image) {
-          // Chuyển đổi dữ liệu nhị phân (Buffer) thành chuỗi Base64
-          news.image = `data:image/png;base64,${news.image.toString("base64")}`;
-        } else {
-          news.image = null; // Nếu không có ảnh, trả về null
-        }
-        return news;
-      });
-
-      res.status(200).json(newsWithImages);
+      res.status(200).json(results);
     });
   },
 
@@ -35,65 +23,80 @@ const newsController = {
         return res.status(404).json({ message: "News not found" });
       }
 
-      const newsWithImages = results.map((news) => {
-        if (news.image) {
-          // Chuyển đổi dữ liệu nhị phân (Buffer) thành chuỗi Base64
-          news.image = `data:image/png;base64,${news.image.toString("base64")}`;
-        } else {
-          news.image = null; // Nếu không có ảnh, trả về null
+      res.status(200).json(results[0]);
+    });
+  },
+
+  createNews: async (req, res) => {
+    try {
+      const { title, content } = req.body;
+
+      if (!title || !content) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      // Nếu có file, upload lên Cloudinary
+      let imageUrl = null;
+      if (req.file) {
+        imageUrl = req.file.path; // URL từ Cloudinary
+      }
+
+      const newsData = { title, content, image: imageUrl };
+
+      // Lưu vào MySQL
+      News.createNews(newsData, (err, result) => {
+        if (err) {
+          console.error("Error creating news:", err);
+          return res.status(500).json({ error: "Failed to create news" });
         }
-        return news;
-      });
 
-      res.status(200).json(newsWithImages[0]);
-    });
+        res.status(201).json({
+          success: true,
+          message: "News created successfully",
+          newsId: result.insertId,
+        });
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   },
 
-  createNews: (req, res) => {
-    const { title, content } = req.body;
-    const image = req.file ? req.file.buffer : null;
+  updateNewsById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { title, content } = req.body;
 
-    if (!title || !content) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    const newsData = { title, content, image };
-
-    News.createNews(newsData, (err, result) => {
-      if (err) {
-        console.error("Error creating news:", err);
-        return res.status(500).json({ error: "Failed to create news" });
+      if (!title || !content) {
+        return res.status(400).json({ error: "Missing required fields" });
       }
 
-      res.status(201).json({
-        message: "News created successfully",
-        newsId: result.insertId,
+      // Nếu có file, upload lên Cloudinary
+      let imageUrl = null;
+      if (req.file) {
+        imageUrl = req.file.path; // URL từ Cloudinary
+      }
+
+      const newsData = { title, content, image: imageUrl };
+
+      News.updateNewsById(id, newsData, (err, result) => {
+        if (err) {
+          console.error("Error updating news:", err);
+          return res.status(500).json({ error: "Failed to update news" });
+        }
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ message: "News not found" });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "News updated successfully",
+        });
       });
-    });
-  },
-
-  updateNewsById: (req, res) => {
-    const { id } = req.params;
-    const { title, content } = req.body;
-    const image = req.file ? req.file.buffer : null;
-
-    if (!title || !content) {
-      return res.status(400).json({ error: "Missing required fields" });
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
-
-    const newsData = { title, content, image };
-
-    News.updateNewsById(id, newsData, (err, result) => {
-      if (err) {
-        console.error("Error updating news:", err);
-        return res.status(500).json({ error: "Failed to update news" });
-      }
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "News not found" });
-      }
-
-      res.status(200).json({ message: "News updated successfully" });
-    });
   },
 
   deleteNewsById: (req, res) => {
