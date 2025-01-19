@@ -165,7 +165,7 @@ const AllTickets: React.FC<AllTicketsProps> = ({ type }) => {
                   </button>
                   <button
                     className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
-                    onClick={() => handleDeleteTicket(ticket.ticket_id)}
+                    onClick={() => handleDeleteTicket(ticket.ticket_id as string)}
                   >
                     Xóa
                   </button>

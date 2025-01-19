@@ -23,9 +23,9 @@ export const createTrip = async (createTripForm: ICreateTrip) => {
       createTripForm,
       {
         headers: {
-          "Content-Type": "application/json", // Đảm bảo định dạng JSON
+          "Content-Type": "application/json",
         },
-        withCredentials: true, // Để gửi cookie
+        withCredentials: true,
       }
     );
     return response.data;
@@ -38,7 +38,7 @@ export const deleteTrip = async (id: number) => {
     const response = await axios.delete(
       `http://localhost:4000/api/trips/${id}`,
       {
-        withCredentials: true, // Để gửi cookie
+        withCredentials: true,
       }
     );
     return response.data;
@@ -63,9 +63,9 @@ export const UpdateTripbyId = async (
       modifiedTrip,
       {
         headers: {
-          "Content-Type": "application/json", // Đảm bảo định dạng JSON
+          "Content-Type": "application/json",
         },
-        withCredentials: true, // Để gửi cookie
+        withCredentials: true,
       }
     );
     return respone.data;
@@ -74,9 +74,9 @@ export const UpdateTripbyId = async (
   }
 };
 
-export const getTripById = async (url: string) => {
+export const getTripById = async (id: number) => {
   try {
-    const response = await axios.get(url, {
+    const response = await axios.get(`http://localhost:4000/api/trips/${id}`, {
       withCredentials: true,
     });
     return response.data;
@@ -85,9 +85,9 @@ export const getTripById = async (url: string) => {
   }
 };
 
-export const apiTripsSearch = async (url: string, params: IParams) => {
+export const apiTripsSearch = async (params: IParams) => {
   try {
-    const response = await axios.get(url, {
+    const response = await axios.get("http://localhost:4000/api/search", {
       params,
     });
     return response.data;

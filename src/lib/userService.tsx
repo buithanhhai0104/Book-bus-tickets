@@ -10,6 +10,7 @@ export const getUsers = async () => {
     console.log("Lỗi lấy tất cả người dùng", err);
   }
 };
+
 export const deleteUser = async (id: number) => {
   try {
     const response = await axios.delete(`http://localhost:4000/users/${id}`, {

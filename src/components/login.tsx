@@ -19,7 +19,7 @@ const Login: React.FC = () => {
     };
 
     try {
-      const res = await apiLogin("http://localhost:4000/auth/login", loginData);
+      const res = await apiLogin(loginData);
       if (res.userdata) {
         setUser(res.userdata);
         router.push("/");

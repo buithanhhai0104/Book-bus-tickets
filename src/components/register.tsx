@@ -19,10 +19,7 @@ const Register = () => {
     };
     console.log(registerData);
     try {
-      const register = await apiRegister(
-        "http://localhost:4000/auth/register",
-        registerData
-      );
+      const register = await apiRegister(registerData);
       console.log(register);
     } catch (err) {
       console.log(err);

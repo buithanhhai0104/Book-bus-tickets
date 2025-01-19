@@ -10,7 +10,7 @@ import { bookTickets } from "@/lib/ticketsService";
 import { IBookTicket } from "@/types/bookTickets";
 import BookingSuccess from "@/components/bookingSuccess";
 
-const TripPage = ({ params }: { params: Promise<{ id: string }> }) => {
+const TripPage = ({ params }: { params: Promise<{ id: number }> }) => {
   const [trip, setTrip] = useState<ITrips | null>(null);
   const [bookTicketsData, setBookTicketData] = useState<IBookTicket[] | null>(
     null
@@ -30,7 +30,7 @@ const TripPage = ({ params }: { params: Promise<{ id: string }> }) => {
   useEffect(() => {
     const fetchTripById = async () => {
       try {
-        const res = await getTripById(`http://localhost:4000/api/trips/${id}`);
+        const res = await getTripById(id);
         setTrip(res);
       } catch (err) {
         console.error("Lỗi khi lấy dữ liệu", err);
@@ -67,10 +67,7 @@ const TripPage = ({ params }: { params: Promise<{ id: string }> }) => {
       email: bookTicketEmail,
     };
     try {
-      const bookTicket = await bookTickets(
-        "http://localhost:4000/tickets/book-ticket",
-        bookTicketData
-      );
+      const bookTicket = await bookTickets(bookTicketData);
       setBookTicketData(bookTicket.tickets);
       setBookingSuccess(true);
       setBookTicketEmail("");

@@ -11,7 +11,7 @@ const RelatedNews: React.FC = () => {
   useEffect(() => {
     const fetchNewsAll = async () => {
       try {
-        const res = await getNewsAll("http://localhost:4000/news");
+        const res = await getNewsAll();
         setNewsAll(res);
       } catch (err) {
         console.log("Lỗi khi lấy dữ liệu của tất cả news", err);

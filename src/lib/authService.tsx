@@ -11,11 +11,15 @@ interface IRegisterData {
   password: string;
 }
 
-export const apiLogin = async (url: string, loginData: ILoginData) => {
+export const apiLogin = async (loginData: ILoginData) => {
   try {
-    const response = await axios.post(url, loginData, {
-      withCredentials: true,
-    });
+    const response = await axios.post(
+      "http://localhost:4000/auth/login",
+      loginData,
+      {
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
@@ -28,11 +32,15 @@ export const apiLogin = async (url: string, loginData: ILoginData) => {
   }
 };
 
-export const apiRegister = async (url: string, registerData: IRegisterData) => {
+export const apiRegister = async (registerData: IRegisterData) => {
   try {
-    const respone = await axios.post(url, registerData, {
-      withCredentials: true,
-    });
+    const respone = await axios.post(
+      "http://localhost:4000/auth/register",
+      registerData,
+      {
+        withCredentials: true,
+      }
+    );
     return respone.data;
   } catch (err) {
     console.log(err);

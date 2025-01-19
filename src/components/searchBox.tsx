@@ -32,10 +32,7 @@ const SearchBox: React.FC = () => {
     };
 
     try {
-      const tripSearch = await apiTripsSearch(
-        "http://localhost:4000/api/search",
-        params
-      );
+      const tripSearch = await apiTripsSearch(params);
       if (tripSearch && tripSearch.length > 0) {
         setTripsData(tripSearch);
         router.push("/trips");

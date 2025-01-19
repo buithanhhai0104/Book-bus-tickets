@@ -4,7 +4,7 @@ export interface IBookTicket {
   to_location?: string;
   from_location?: string;
   user_id: number | undefined;
-  trip_id: string;
+  trip_id: number;
   seat_numbers: string[];
   seat_number?: string;
   name: string;

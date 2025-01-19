@@ -26,7 +26,7 @@ const Manage = () => {
     createTrip: <CreateTrip />,
     allTrips: <AllTrips />,
     users: <Users />,
-    news: <div>bài báo</div>,
+    news: <div>1231</div>,
     allTickets: <AllTickets type="Tất cả vé" />,
     paidTickets: <AllTickets type="Vé đã thanh toán" />,
     unpaidTickets: <AllTickets type="Vé chưa thanh toán" />,
