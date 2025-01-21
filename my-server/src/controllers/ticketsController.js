@@ -54,7 +54,7 @@ const ticketsController = {
         return seat;
       });
       const expires_at = moment()
-        .add(1, "minutes")
+        .add(10, "minutes")
         .format("YYYY-MM-DD HH:mm:ss");
       console.log("Expires at:", expires_at);
       // Tạo dữ liệu vé

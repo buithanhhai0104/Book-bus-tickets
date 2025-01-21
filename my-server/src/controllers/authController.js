@@ -116,6 +116,11 @@ exports.verifyAdmin = (req, res, next) => {
 };
 
 exports.logout = (req, res) => {
-  res.clearCookie("authToken");
+  res.clearCookie("authToken", {
+    httpOnly: true,
+    sameSite: "none",
+    secure: true, // Nếu sử dụng HTTPS
+    path: "/", // Đảm bảo rằng cookie được xóa đúng đường dẫn
+  });
   res.status(200).json({ message: "Đăng xuất thành công!" });
 };
